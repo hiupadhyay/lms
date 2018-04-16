@@ -1,0 +1,254 @@
+<html>
+<title>Search Page</title>
+<head>
+<script src="/js/angular.js"></script>
+<script src="/js/app.js"></script>
+<script src="/js/jquery-1.11.2.min.js"></script>
+<script data-require="ui-bootstrap@*" data-semver="0.12.1"
+	src="/js/ui-bootstrap-tpls-0.12.1.min.js"></script>
+<link rel="stylesheet" type="text/css" href="css/my.css">
+<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+</head>
+<body ng-app="Search" ng-controller="SearchController">
+	<div style="border-bottom: 3px solid grey;">
+		<H1 align="center">Welcome to Online Library</H1>
+	</div>
+	<div>
+		<h3>Pick Your Search Criteria</h3>
+	</div>
+	<div>
+		<label class="container">{{getBooks}} <input type="radio"
+			checked="checked" ng-model="books" value="getBooks"> <span
+			class="checkmark"></span>
+		</label> <label class="container">{{count}} <input type="radio"
+			name="radio" ng-model="books" value="count"> <span
+			class="checkmark"></span>
+		</label> <label class="container">{{addBook}} <input type="radio"
+			name="radio" ng-model="books" value="addBook"> <span
+			class="checkmark"></span>
+		</label> <label class="container">{{delBook}} <input type="radio"
+			name="radio" ng-model="books" value="delBook"> <span
+			class="checkmark"></span>
+		</label> <label class="container">{{borrowBook}} <input type="radio"
+			name="radio" ng-model="books" value="borrowBook"> <span
+			class="checkmark"></span>
+		</label> <label class="container">{{cancelBorrow}} <input type="radio"
+			name="radio" ng-model="books" value="cancelBorrow"> <span
+			class="checkmark"></span>
+		</label>
+	</div>
+	<div style="padding-top: 16px; padding-bottom: 18px">
+		<button ng-click="search()"
+			style="border: none; color: black; padding: 10px 30px; text-align: center; text-decoration: none; display: inline-block;">Search</button>
+	</div>
+
+	<div>
+
+		<table id="booktable" cellpadding="2" cellspacing="1" border="1"
+			ng-show="searchBook">
+
+			<tr style="background-color: lightgrey">
+				<td>Book E-code</td>
+				<td>Title</td>
+				<td>Cover</td>
+				<td>Publisher</td>
+				<td>No of Pages</td>
+				<td>No of Books Available</td>
+
+			</tr>
+
+			<tr ng-repeat="book in filteredTodos">
+				<td>{{book.isbn}}</td>
+				<td>{{book.title}}</td>
+				<td>{{book.cover}}</td>
+				<td>{{book.publisher}}</td>
+				<td>{{book.pages}}</td>
+				<td>{{book.available}}</td>
+			</tr>
+
+
+		</table>
+		<div ng-show="searchBook">
+			<pagination ng-model="currentPage" total-items="output.length"
+				max-size="maxSize" boundary-links="true"> </pagination>
+		</div>
+	</div>
+
+
+	<div class="addBook">
+		<H4 align="center" ng-show="addBookFlag">Enter Book Details here</H4>
+		<table id="addBooks" cellpadding="2" cellspacing="1" border="1"
+			ng-show="addBookFlag">
+
+			<thead>
+				<tr style="background-color: lightgrey">
+					<td>Book E-code</td>
+					<td>Title</td>
+					<td>Cover</td>
+					<td>Publisher</td>
+					<td>No of Pages</td>
+					<td>No of Books Available</td>
+				</tr>
+			</thead>
+
+			<tr ng-repeat="user in bookCart">
+				<!--   -->
+				<td><input type="text" name="isbn" ng-model="user.isbn" /></td>
+				<td><input type="text" name="title" ng-model="user.title" /></td>
+				<td><input type="text" name="cover" ng-model="user.cover" /></td>
+				<td><input type="text" name="publisher"
+					ng-model="user.publisher" /></td>
+				<td><input type="text" name="pages" ng-model="user.pages" /></td>
+				<td><input type="text" name="available"
+					ng-model="user.available" /></td>
+			</tr>
+
+		</table>
+
+		<div align="left">
+			<button ng-click="addRows($event)" ng-show="addBookFlag"
+				style="border: none; color: black; padding: 10px 30px; text-decoration: none; display: inline-block;">Add
+				Row</button>
+			<button ng-click="removeRows()" ng-show="addBookFlag"
+				style="border: none; color: black; padding: 10px 30px; text-decoration: none; display: inline-block;">Remove
+				Row</button>
+			<button ng-click="addRow()" ng-show="addBookFlag"
+				style="border: none; color: black; padding: 10px 30px; text-decoration: none; display: inline-block;">Sumbit
+				Data</button>
+		</div>
+
+		<div>
+			<H4 align="center" ng-show="delBookFlag">Pick Books to delete</H4>
+			<table id="addBooks" cellpadding="2" cellspacing="1" border="1"
+				ng-show="delBookFlag">
+
+				<thead>
+					<tr style="background-color: lightgrey">
+						<td>Pick</td>
+						<td>Book E-code</td>
+						<td>Title</td>
+						<td>Cover</td>
+						<td>Publisher</td>
+						<td>No of Pages</td>
+						<td>No of Books Available</td>
+					</tr>
+				</thead>
+
+				<tr ng-repeat="bcache in filteredTodosC">
+					<td><input type="checkbox" ng-model='bcache.selected'></td>
+					<td>{{bcache.isbn}}</td>
+					<td>{{bcache.title}}</td>
+					<td>{{bcache.cover}}</td>
+					<td>{{bcache.publisher}}</td>
+					<td>{{bcache.pages}}</td>
+					<td>{{bcache.available}}</td>
+				</tr>
+
+			</table>
+			<div ng-show="delBookFlag">
+				<pagination ng-model="currentPage" total-items="bookCache.length"
+					max-size="maxSize" boundary-links="true"> </pagination>
+			</div>
+			<div align="left">
+				<button ng-click="deleteRows(bcache)" ng-show="delBookFlag"
+					style="border: none; color: black; padding: 10px 30px; text-decoration: none; display: inline-block;">Delete
+					Books</button>
+			</div>
+		</div>
+
+
+		<div ng-show="displayStandardMessage">
+			<h3>Hey Your record submitted sucessfully.....</h3>
+		</div>
+		<div ng-show="displayError">
+			<h3>Some error occured please try again..</h3>
+		</div>
+
+	</div>
+
+
+	<div class="borrowBook" ng-show="borrowFlag" style="padding-left: 10px">
+		<h4 align="center">Pick Your Books..</h4>
+		<table id="borrowBooks" cellpadding="1" cellspacing="2" border="1"
+			ng-show="borrowFlag">
+
+			<tr>
+
+				<td ng-repeat="bcache in filteredTodosC" align="center">
+					<div style="height: 200px; width: 100%;">
+						<label style="padding: 10px;">ISBN ISaaaaaaaaaaaaaaaaa:{{bcache.isbn}} </label> <br>
+						<label style="padding: 10px;">Title is:{{bcache.title}} </label> <br>
+						<label style="padding: 10px;">Amount:{{bcache.available}}
+						</label> <br>
+						<div>
+							<button type="button" ng-click="makeBooking(bcache)"
+								ng-show="borrowBook"
+								style="border: none; color: black; padding: 10px 30px; text-decoration: none; display: inline-block; text-align: center;">Buy</button>
+						</div>
+					</div>
+				</td>
+
+
+
+			</tr>
+
+		</table>
+		<div ng-show="borrowFlag">
+			<pagination ng-model="currentPage" total-items="bookCache.length"
+				max-size="maxSize" boundary-links="true"> </pagination>
+		</div>
+		<div class="popup" ng-show="displayBookingSucess">
+
+			<span class="popuptext" id="myPopup"><h3>Your Booking is
+					sucessfull</h3></span>
+		</div>
+	</div>
+
+	<!-- Cancel Booking -->
+
+	<div class="cancelBooking" ng-show="cancelBooking"
+		style="padding-left: 10px">
+		<h4 align="center">Cancel Your Booking</h4>
+		<table id="cancelBooking" cellpadding="1" cellspacing="2" border="1"
+			ng-show="cancelBooking">
+
+			<tr>
+
+				<td ng-repeat="bcache in alreadyBooked" align="center">
+					<div style="height: 200px; width: 100%;">
+						<label style="padding: 10px;">Booking Code:{{bcache.isbn}}
+						</label> <br> <label style="padding: 10px;">Booking date
+							is:{{bcache.booking_date}} </label> <br> <label
+							style="padding: 10px;">Refund Amount:{{bcache.quantity}}
+						</label> <br>
+						<div>
+							<button type="button" ng-click="cancelBookingM(bcache)"
+								ng-show="cancelBooking"
+								style="border: none; color: black; padding: 10px 30px; text-decoration: none; display: inline-block; text-align: center;">Cancel
+								Order</button>
+						</div>
+					</div>
+				</td>
+
+
+
+			</tr>
+
+		</table>
+
+		<div ng-show="cancelBooking">
+			<pagination ng-model="currentPage" total-items="cancelCache.length"
+				max-size="maxSize" boundary-links="true"> </pagination>
+		</div>
+		<div class="popup" ng-show="displayCancelSucess">
+
+			<span class="popuptext" id="myPopup"><h3>Cancelled
+					Sucessfully</h3></span>
+		</div>
+	</div>
+	<!--  Ends...-->
+</body>
+
+
+
+</html>

@@ -1,0 +1,30 @@
+<html>
+<title>MyWebApp</title>
+<head><script src="/js/angular.js"></script>
+<script src="/js/app.js"></script>
+</head>
+<body ng-app="MyApp" ng-controller="LoginController">
+
+<div >Hey{{welcomeMessage}}</div>
+<div>Message for you:: {{LongMessage}}</div>
+<div>
+    <table  cellpadding="2" cellspacing="1" border="1">
+  <tr>
+		  <td>Identity No.</td>
+		  <td>Name</td>
+		  <td>Date of Birth</td>
+		  <td>Address</td>
+    </tr>
+  <tr ng-repeat="product in result">
+  		<td>{{product.id}}</td>
+		  <td>{{product.name}}</td>
+		  <td>{{product.dob}}</td>
+		  <td>{{product.address}}</td>
+    </tr>
+ 
+  
+  
+  </table>
+  </div>
+</body>
+</html>
