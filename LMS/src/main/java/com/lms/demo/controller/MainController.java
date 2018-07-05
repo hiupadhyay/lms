@@ -6,13 +6,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class MainController {
 
+	
+	
   @GetMapping("/Login")
   public String getRequest()
   {
     System.out.println("returning call from Login user....");
-    return "home";
+    return "login";
   }
-  @GetMapping("/register")
+  @GetMapping("/Register")
   public String registerUser()
   {
     System.out.println("returning call from Login user....");
@@ -22,7 +24,14 @@ public class MainController {
   @GetMapping("/search")
   public String searchDetails()
   {
-    System.out.println("returning call from Login user....");
+  	// logger.debug("Debug message");
+ 
     return "search";
+  }
+  
+  @GetMapping("/")
+  public String others()
+  {
+    return searchDetails();
   }
 }
