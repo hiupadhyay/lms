@@ -4,7 +4,7 @@ app.controller("LoginController", function($scope, $http) {
     $scope.welcomeMessage = "Hey buddy welcome...";
     $scope.LongMessage = "You have sucessfully integrated Angular with java";
     console.log("Processed Till here");
-    $http.get('http://localhost:8080/getData').
+    $http.get('http://localhost:8080/api/getData').
     then(function(response) {
         $scope.result = response.data;
     });
@@ -51,7 +51,7 @@ var app = angular.module("Search", ['ui.bootstrap']).controller("SearchControlle
        
         if (choice == 'getBooks') {
             $scope.searchBook = true;
-            var url = 'http://localhost:8080/' + choice;
+            var url = 'http://localhost:8080/api/' + choice;
             $http.get(url).
             then(function(response) {
                 $scope.output = response.data;
@@ -84,7 +84,7 @@ var app = angular.module("Search", ['ui.bootstrap']).controller("SearchControlle
 
         } else {
             $scope.searchBook = true;
-            var url = 'http://localhost:8080/' + choice;
+            var url = 'http://localhost:8080/api/' + choice;
             $http.get(url).
             then(function(response) {
                 $scope.output = response.data;
@@ -96,7 +96,7 @@ var app = angular.module("Search", ['ui.bootstrap']).controller("SearchControlle
 
     $scope.addRow = function() {
         console.log($scope.bookCart);
-        $http.post("http://localhost:8080/addBook", $scope.bookCart).then(function(response) {
+        $http.post("http://localhost:8080/api/addBook", $scope.bookCart).then(function(response) {
             if (response.status == "200") {
 
                 $scope.addBookFlag = false;
@@ -151,7 +151,7 @@ var app = angular.module("Search", ['ui.bootstrap']).controller("SearchControlle
     }
     function loadBooks() {
 
-        $http.get('http://localhost:8080/getBooks').
+        $http.get('http://localhost:8080/api/getBooks').
         then(function(response) {
             $scope.bookCache = response.data;
             paginationDel();
@@ -162,7 +162,7 @@ var app = angular.module("Search", ['ui.bootstrap']).controller("SearchControlle
 }
     function loadBookedThings() {
 
-        $http.get('http://localhost:8080/getBookingDetails').
+        $http.get('http://localhost:8080/api/getBookingDetails').
         then(function(response) {
             $scope.cancelCache = response.data;
             paginationBooking();
@@ -209,7 +209,7 @@ var app = angular.module("Search", ['ui.bootstrap']).controller("SearchControlle
 
     function searchBooks() {
 
-        $http.get('http://localhost:8080/getBooks').
+        $http.get('http://localhost:8080/api/getBooks').
         then(function(response) {
             $scope.bookCache = response.data;
             paginationDel();
@@ -233,7 +233,7 @@ var app = angular.module("Search", ['ui.bootstrap']).controller("SearchControlle
     	$scope.orderCart.booking_date=new Date();
     	
     	//
-    	  $http.post("http://localhost:8080/makeBooking", $scope.orderCart).then(function(response) {
+    	  $http.post("http://localhost:8080/api/makeBooking", $scope.orderCart).then(function(response) {
               if (response.status == "200") {
                   $scope.displayError = false;
                   $scope.displayBookingSucess = true;
@@ -259,7 +259,7 @@ var app = angular.module("Search", ['ui.bootstrap']).controller("SearchControlle
     	
     	/*alert($scope.cancelCart.booking_id);*/
     	//
-    	  $http.post("http://localhost:8080/cancelBooking", $scope.cancelCart).then(function(response) {
+    	  $http.post("http://localhost:8080/api/cancelBooking", $scope.cancelCart).then(function(response) {
               if (response.status == "200") {
                   $scope.displayError = false;
                   $scope.displayCancelSucess = true;
@@ -284,7 +284,7 @@ var app = angular.module("Search", ['ui.bootstrap']).controller("SearchControlle
         });
         
         // alert(JSON.stringify($scope.delCart));
-        $http.post('http://localhost:8080/delBook/', $scope.delCart).
+        $http.post('http://localhost:8080/api/delBook/', $scope.delCart).
         then
             (function(response) {
 
