@@ -11,9 +11,9 @@ app.controller("LoginController", function($scope, $http) {
 
 });
 
-var app = angular.module("Search", ['ui.bootstrap']).controller("SearchController", function($scope, $http) {
+var app = angular.module("Search", ['ui.bootstrap']).controller("SearchController",
+    function($scope, $http) {
     // it's for default check box thing...
-
     $scope.books = "getBooks";
     $scope.rounds = 5;
     $scope.getBooks = "Search all Book Details";
@@ -22,7 +22,6 @@ var app = angular.module("Search", ['ui.bootstrap']).controller("SearchControlle
     $scope.delBook = "Delete Existing Book";
     $scope.borrowBook = "Booking";
     $scope.cancelBorrow = "Cancel Booking";
-    
     $scope.bookCart = [{
         'isbn': '',
         'title': '',
@@ -31,12 +30,16 @@ var app = angular.module("Search", ['ui.bootstrap']).controller("SearchControlle
         'pages': '',
         'available': ''
     }];
-    $scope.delCart=[];
-    $scope.orderCart = {'booking_id':"",'isbn':"isbn",'booking_date':"",'quantity':"quantity"};
+    $scope.delCart = [];
+    $scope.orderCart = {
+        'booking_id': "",
+        'isbn': "isbn",
+        'booking_date': "",
+        'quantity': "quantity"
+    };
     $scope.cancelCart;
     $scope.search = function() {
         var choice = $scope.books;
-
         $scope.searchBook = false;
         $scope.addBookFlag = false;
         $scope.countFlag = false;
@@ -45,27 +48,21 @@ var app = angular.module("Search", ['ui.bootstrap']).controller("SearchControlle
         $scope.displayError = false;
         $scope.borrowFlag = false;
         $scope.cancelBooking = false;
-        $scope.displayBookingSucess=false;
-        $scope.displayCancelSucess=false;
+        $scope.displayBookingSucess = false;
+        $scope.displayCancelSucess = false;
         // Pagination Logic
-       
         if (choice == 'getBooks') {
             $scope.searchBook = true;
             var url = 'http://localhost:8080/api/' + choice;
             $http.get(url).
             then(function(response) {
                 $scope.output = response.data;
-
                 pagination();
-
             });
-
         } else if (choice == 'addBook') {
             // clear before adding books....
             clear();
             $scope.addBookFlag = true;
-
-
 
         } else if (choice == 'delBook') {
             $scope.delBookFlag = true;
@@ -90,15 +87,12 @@ var app = angular.module("Search", ['ui.bootstrap']).controller("SearchControlle
                 $scope.output = response.data;
             });
         }
-
-
     }
 
     $scope.addRow = function() {
         console.log($scope.bookCart);
         $http.post("http://localhost:8080/api/addBook", $scope.bookCart).then(function(response) {
             if (response.status == "200") {
-
                 $scope.addBookFlag = false;
                 $scope.displayError = false;
                 $scope.displayStandardMessage = true;
@@ -107,30 +101,23 @@ var app = angular.module("Search", ['ui.bootstrap']).controller("SearchControlle
                 $scope.displayError = true;
             }
         }).catch(function(response) {
-
             $scope.displayError = true;
         });
-
-
     };
-    function paginationDel() {
 
+    function paginationDel() {
         $scope.filteredTodosC = [];
         $scope.todos = [];
         $scope.currentPage = 1;
         $scope.numPerPage = 9;
         $scope.maxSize = 5;
-
-
         $scope.$watch('currentPage + numPerPage', function() {
-
             var begin = (($scope.currentPage - 1) * $scope.numPerPage);
             var end = begin + $scope.numPerPage;
             $scope.filteredTodosC = $scope.bookCache.slice(begin, end);
         });
-
-
     }
+
     function paginationBooking() {
 
         $scope.filteredTodosC = [];
@@ -149,6 +136,7 @@ var app = angular.module("Search", ['ui.bootstrap']).controller("SearchControlle
 
 
     }
+
     function loadBooks() {
 
         $http.get('http://localhost:8080/api/getBooks').
@@ -159,7 +147,8 @@ var app = angular.module("Search", ['ui.bootstrap']).controller("SearchControlle
 
 
 
-}
+    }
+
     function loadBookedThings() {
 
         $http.get('http://localhost:8080/api/getBookingDetails').
@@ -170,7 +159,7 @@ var app = angular.module("Search", ['ui.bootstrap']).controller("SearchControlle
 
 
 
-}
+    }
 
     function clear() {
         $scope.bookCart = [{
@@ -183,7 +172,7 @@ var app = angular.module("Search", ['ui.bootstrap']).controller("SearchControlle
         }];
 
     }
-    
+
     function pagination() {
         $scope.filteredTodos = [];
         $scope.todos = [];
@@ -202,6 +191,7 @@ var app = angular.module("Search", ['ui.bootstrap']).controller("SearchControlle
 
 
     }
+
     function clearDelCart() {
         $scope.delCart = [];
 
@@ -214,65 +204,63 @@ var app = angular.module("Search", ['ui.bootstrap']).controller("SearchControlle
             $scope.bookCache = response.data;
             paginationDel();
         });
-            
+
 
     }
     $scope.addRows = function($event) {
         $scope.bookCart.push({});
     };
-    
-    $scope.makeBooking=function(bcache)
-    {
-    	/*
-    	 * Pick required fields from Booking to be inserted into Order table.
-    	 * Booking_id
-    	 */
-    	
-       	$scope.orderCart.isbn=bcache.isbn;
-    	$scope.orderCart.quantity=bcache.pages;
-    	$scope.orderCart.booking_date=new Date();
-    	
-    	//
-    	  $http.post("http://localhost:8080/api/makeBooking", $scope.orderCart).then(function(response) {
-              if (response.status == "200") {
-                  $scope.displayError = false;
-                  $scope.displayBookingSucess = true;
-                  clear();
-              } else {
-                  $scope.displayError = true;
-              }
-          }).catch(function(response) {
 
-              $scope.displayError = true;
-          });
-    	
+    $scope.makeBooking = function(bcache) {
+        /*
+         * Pick required fields from Booking to be inserted into Order table.
+         * Booking_id
+         */
+
+        $scope.orderCart.isbn = bcache.isbn;
+        $scope.orderCart.quantity = bcache.pages;
+        $scope.orderCart.booking_date = new Date();
+
+        //
+        $http.post("http://localhost:8080/api/makeBooking", $scope.orderCart).then(function(response) {
+            if (response.status == "200") {
+                $scope.displayError = false;
+                $scope.displayBookingSucess = true;
+                clear();
+            } else {
+                $scope.displayError = true;
+            }
+        }).catch(function(response) {
+
+            $scope.displayError = true;
+        });
+
     }
-    
-    $scope.cancelBookingM=function(bcache)
-    {
-    	/*
-    	 * Pick required fields from Booking to be inserted into Order table.
-    	 * Booking_id
-    	 */
-    	
-       	$scope.cancelCart=bcache.booking_id;
-    	
-    	/*alert($scope.cancelCart.booking_id);*/
-    	//
-    	  $http.post("http://localhost:8080/api/cancelBooking", $scope.cancelCart).then(function(response) {
-              if (response.status == "200") {
-                  $scope.displayError = false;
-                  $scope.displayCancelSucess = true;
-                  clear();
-                  loadBookedThings();
-              } else {
-                  $scope.displayError = true;
-              }
-          }).catch(function(response) {
 
-              $scope.displayError = true;
-          });
-    	
+    $scope.cancelBookingM = function(bcache) {
+        /*
+         * Pick required fields from Booking to be inserted into Order table.
+         * Booking_id
+         */
+
+        $scope.cancelCart = bcache.booking_id;
+
+        /*alert($scope.cancelCart.booking_id);*/
+        //
+        $http.post("http://localhost:8080/api/cancelBooking", $scope.cancelCart).then(function(response) {
+            if (response.status == "200") {
+                $scope.displayError = false;
+                $scope.displayCancelSucess = true;
+                clear();
+                loadBookedThings();
+            } else {
+                $scope.displayError = true;
+            }
+        }).catch(function(response) {
+
+            $scope.displayError = true;
+        });
+
     }
 
     $scope.deleteRows = function(bcache) {
@@ -282,7 +270,7 @@ var app = angular.module("Search", ['ui.bootstrap']).controller("SearchControlle
                 $scope.delCart.push(sel);
             }
         });
-        
+
         // alert(JSON.stringify($scope.delCart));
         $http.post('http://localhost:8080/api/delBook/', $scope.delCart).
         then
@@ -312,6 +300,6 @@ var app = angular.module("Search", ['ui.bootstrap']).controller("SearchControlle
 
         $scope.bookCart.splice();
 
-   };
+    };
 
-    });
+});
