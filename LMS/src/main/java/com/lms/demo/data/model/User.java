@@ -1,50 +1,33 @@
 package com.lms.demo.data.model;
 
-public class User {
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import org.hibernate.annotations.GenericGenerator;
 
-  private String id;
-  private String name;
-  private String dob;
-  private String address;
+import javax.persistence.*;
+import java.io.Serializable;
 
-  public User(String id, String name, String dob, String addres) {
-    super();
-    this.id = id;
-    this.name = name;
-    this.dob = dob;
-    this.address = addres;
-  }
+@Entity
+@Table(name = "user")
+@Data
+@AllArgsConstructor
+public class User implements Serializable {
 
-  public String getId() {
-    return id;
-  }
+    @Id
+    @GeneratedValue(generator = "system-uuid")
+    @GenericGenerator(name = "system-uuid", strategy = "uuid")
+    @Column(name = "id")
+    private String id;
+    @Column(name = "name")
+    private String name;
+    @Column(name = "dob")
+    private String dob;
+    @Column(name = "address")
+    private String address;
+    @Column(name = "password")
+    private String password;
 
-  public void setId(String id) {
-    this.id = id;
-  }
+    public User() {
 
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  public String getDob() {
-    return dob;
-  }
-
-  public void setDob(String dob) {
-    this.dob = dob;
-  }
-
-  public String getAddress() {
-    return address;
-  }
-
-  public void setAddress(String address) {
-    this.address = address;
-  }
-
+    }
 }
