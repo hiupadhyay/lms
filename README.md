@@ -67,21 +67,56 @@ Reset DB (drops volume): `docker-compose down -v`
 - `docker-compose.yml`, `run_local.sh`
 
 ## Architecture (high level)
-```
-[Browser UI]
-  ├─ search.html + search.js (catalogue console, pagination, CRUD via REST)
-  └─ register.html + register.js (user signup)
-      |
-      v
-[Spring Boot App]
-  ├─ Controllers: BookController, UserController, ViewController
-  ├─ Repositories: BookRepository, OrderRepository, UserRepository
-  └─ Models/DTOs: Book, Order, User, CancelBookingRequest, UserDto
-      |
-      v
-[MySQL 8 (Docker)]
-  ├─ schema.sql / data.sql (classpath init)
-  └─ dbscript/init.sql (Docker init)
+
+- Browser UI  
+  - `search.html` + `search.js` (catalogue console, pagination, CRUD via REST)  
+  - `register.html` + `register.js` (user signup)
+- Spring Boot App  
+  - Controllers: `BookController`, `UserController`, `ViewController`  
+  - Repositories: `BookRepository`, `OrderRepository`, `UserRepository`  
+  - Models/DTOs: `Book`, `Order`, `User`, `CancelBookingRequest`, `UserDto`
+- MySQL 8 (Docker)  
+  - `schema.sql` / `data.sql` (classpath init)  
+  - `dbscript/init.sql` (Docker init)
+
+### UML (context diagram)
+GitHub/Markdown-friendly mermaid:
+
+```mermaid
+flowchart LR
+  User((User))
+
+  subgraph UI[Browser UI]
+    Search[search.html / search.js\nCatalogue console]
+    Register[register.html / register.js\nSignup]
+  end
+
+  subgraph App[Spring Boot App]
+    CtrlBook[BookController]
+    CtrlUser[UserController]
+    CtrlView[ViewController]
+    RepoBook[BookRepository]
+    RepoOrder[OrderRepository]
+    RepoUser[UserRepository]
+  end
+
+  DB[(MySQL 8)]
+  Schema[schema.sql / data.sql]
+  Init[dbscript/init.sql]
+
+  User --> Search
+  User --> Register
+  Search --> CtrlBook
+  Search --> CtrlView
+  Register --> CtrlUser
+  CtrlBook --> RepoBook
+  CtrlBook --> RepoOrder
+  CtrlUser --> RepoUser
+  RepoBook --> DB
+  RepoOrder --> DB
+  RepoUser --> DB
+  Schema --> DB
+  Init --> DB
 ```
 
 ## Troubleshooting
