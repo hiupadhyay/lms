@@ -54,10 +54,10 @@ public class BookController {
         boolean hasInvalid = books.stream().anyMatch(this::invalidBookPayload);
         if (hasInvalid) {
             return ResponseEntity.badRequest()
-                    .body(Collections.singletonMap("message", "Invalid book payload: ISBN/title required, pages > 0, available >= 0."));
+                    .body(Collections.singletonMap("message", "Invalid book payload: ISBN >= 5 chars, title >= 3 chars, pages > 0, available >= 0."));
         }
         bookRepository.saveAll(books);
-        return ResponseEntity.accepted().build();
+        return ResponseEntity.ok(Collections.singletonMap("message", "Books added successfully."));
     }
 
     @PostMapping(value = "/delBook", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -87,7 +87,9 @@ public class BookController {
     private boolean invalidBookPayload(Book book) {
         return book == null
                 || !StringUtils.hasText(book.getIsbn())
+                || book.getIsbn().trim().length() < 5
                 || !StringUtils.hasText(book.getTitle())
+                || book.getTitle().trim().length() < 3
                 || book.getPages() <= 0
                 || book.getAvailable() < 0;
     }
