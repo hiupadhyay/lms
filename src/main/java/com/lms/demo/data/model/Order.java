@@ -28,7 +28,7 @@ public class Order implements Serializable {
   @JsonProperty("bookingId")
   private String bookingId;
 
-  @Column(name = "ISBN")
+  @Column(name = "isbn")
   @JsonProperty("isbn")
   private String isbn;
 
@@ -39,4 +39,13 @@ public class Order implements Serializable {
   @Column(name = "quantity")
   @JsonProperty("quantity")
   private int quantity;
+  
+  // compatibility for previous naming in the UI if still referenced
+  public String getBooking_id() {
+    return bookingId;
+  }
+  
+  public void setBooking_id(String bookingId) {
+    this.bookingId = bookingId;
+  }
 }

@@ -9,11 +9,11 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "Book")
+@Table(name = "book")
 @Data
 public class Book {
   @Id
-  @Column(name = "ISBN")
+  @Column(name = "isbn")
   @JsonProperty("isbn")
   private String isbn;
 
