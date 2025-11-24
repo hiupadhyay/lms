@@ -119,6 +119,14 @@ angular.module("Search", ['ui.bootstrap']).controller("BookController",
         }
 
         $scope.addRow = function () {
+            const invalidRow = $scope.bookCart.some(function (b) {
+                return !b.isbn || !b.title || !b.pages || b.pages <= 0;
+            });
+            if (invalidRow) {
+                $scope.displayError = true;
+                $scope.statusMessage = "Please fill ISBN, Title, and positive Pages for all rows.";
+                return;
+            }
             $http.post(`${API_ROOT}/addBook`, $scope.bookCart).then(function (response) {
                 if (response.status == 202 || response.status == 200) {
                     $scope.addBookFlag = false;

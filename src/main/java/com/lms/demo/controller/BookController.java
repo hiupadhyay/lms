@@ -7,6 +7,7 @@ import com.lms.demo.data.repository.OrderRepository;
 import com.lms.demo.dto.CancelBookingRequest;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -48,6 +49,10 @@ public class BookController {
         if (books == null || books.isEmpty()) {
             return ResponseEntity.badRequest().build();
         }
+        boolean invalid = books.stream().anyMatch(this::invalidBookPayload);
+        if (invalid) {
+            return ResponseEntity.badRequest().build();
+        }
         bookRepository.saveAll(books);
         return ResponseEntity.accepted().build();
     }
@@ -76,4 +81,11 @@ public class BookController {
         return ResponseEntity.noContent().build();
     }
 
+    private boolean invalidBookPayload(Book book) {
+        return book == null
+                || !StringUtils.hasText(book.getIsbn())
+                || !StringUtils.hasText(book.getTitle())
+                || book.getPages() <= 0
+                || book.getAvailable() < 0;
+    }
 }
