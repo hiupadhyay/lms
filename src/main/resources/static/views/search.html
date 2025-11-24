@@ -166,11 +166,14 @@
                     <input type="number" name="available{{$index}}" ng-model="user.available" min="0" placeholder="4" required/>
                 </label>
             </div>
+            <div class="field-error" ng-if="invalidBook(user)">
+                Fill ISBN (>=5 chars), Title (>=3 chars), Pages (>0) and Available (>=0).
+            </div>
         </div>
         <div class="button-row">
             <button class="btn-ghost" ng-click="addRows($event)" type="button">Add row</button>
             <button class="btn-ghost" ng-click="removeRows()" type="button">Remove row</button>
-            <button class="btn-primary" ng-click="addRow()" ng-disabled="addBookForm.$invalid" type="button">Submit to catalogue</button>
+            <button class="btn-primary" ng-click="addRow()" type="button">Submit to catalogue</button>
         </div>
         <div class="alert danger" ng-show="addBookValidationMessage">
             {{addBookValidationMessage}}

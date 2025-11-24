@@ -57,12 +57,12 @@ angular.module("Search", ['ui.bootstrap']).controller("BookController",
         $scope.catalogueCount = 0;
 
         $scope.bookCart = [{
-            'isbn': '',
-            'title': '',
-            'cover': '',
-            'publisher': '',
-            'pages': '',
-            'available': ''
+            'isbn': null,
+            'title': null,
+            'cover': null,
+            'publisher': null,
+            'pages': null,
+            'available': null
         }];
         $scope.delCart = [];
         $scope.orderCart = {
@@ -120,21 +120,11 @@ angular.module("Search", ['ui.bootstrap']).controller("BookController",
         }
 
         $scope.addRow = function () {
-            const invalidRow = $scope.bookCart.some(function (b) {
-                const pages = parseInt(b.pages, 10);
-                const available = parseInt(b.available, 10);
-                return !b
-                    || !b.isbn
-                    || !b.title
-                    || !Number.isFinite(pages)
-                    || pages <= 0
-                    || !Number.isFinite(available)
-                    || available < 0;
-            });
+            const invalidRow = $scope.bookCart.some(invalidBook);
             if (invalidRow) {
                 $scope.displayError = true;
                 $scope.displayStandardMessage = false;
-                $scope.statusMessage = "Fill ISBN, Title, Pages (>0) and Available (>=0) for every row before submitting.";
+                $scope.statusMessage = "Fill ISBN (>=5 chars), Title (>=3 chars), Pages (>0) and Available (>=0) for every row before submitting.";
                 $scope.addBookValidationMessage = $scope.statusMessage;
                 return;
             }
@@ -143,34 +133,31 @@ angular.module("Search", ['ui.bootstrap']).controller("BookController",
                     $scope.addBookFlag = false;
                     $scope.displayError = false;
                     $scope.displayStandardMessage = true;
-                    $scope.statusMessage = "Books added successfully.";
+                    const msg = (response && response.data && response.data.message) ? response.data.message : "Books added successfully.";
+                    $scope.statusMessage = msg;
                     clear();
                     $scope.addBookValidationMessage = "";
+                    // refresh catalogue so the new entries are visible immediately
+                    $scope.books = "getBooks";
+                    $scope.search();
                 } else {
                     $scope.displayError = true;
                     $scope.addBookValidationMessage = "Unable to save books. Please retry.";
                 }
             }).catch(function (resp) {
                 $scope.displayError = true;
-                const msg = (resp && resp.data && resp.data.message) ? resp.data.message : "Could not save your books.";
+                const msg = (resp && resp.data && resp.data.message)
+                    ? resp.data.message
+                    : "Validation failed: ensure ISBN (>=5 chars), title (>=3 chars), pages > 0, available >= 0.";
                 $scope.statusMessage = msg;
                 $scope.addBookValidationMessage = msg;
             });
         };
 
         $scope.bookCartValid = function () {
-            return $scope.bookCart.every(function (b) {
-                const pages = parseInt(b.pages, 10);
-                const available = parseInt(b.available, 10);
-                return b
-                    && b.isbn
-                    && b.title
-                    && Number.isFinite(pages)
-                    && pages > 0
-                    && Number.isFinite(available)
-                    && available >= 0;
-            });
+            return $scope.bookCart.every(function (b) { return !invalidBook(b); });
         };
+        $scope.invalidBook = invalidBook;
 
         function paginationDel() {
             $scope.filteredTodosC = [];
@@ -215,12 +202,12 @@ angular.module("Search", ['ui.bootstrap']).controller("BookController",
 
         function clear() {
             $scope.bookCart = [{
-                'isbn': '',
-                'title': '',
-                'cover': '',
-                'publisher': '',
-                'pages': '',
-                'available': ''
+                'isbn': null,
+                'title': null,
+                'cover': null,
+                'publisher': null,
+                'pages': null,
+                'available': null
             }];
         }
 
@@ -242,6 +229,19 @@ angular.module("Search", ['ui.bootstrap']).controller("BookController",
             $scope.delCart = [];
         }
 
+        function invalidBook(b) {
+            if (!b) { return true; }
+            const isbnOk = !!(b.isbn && String(b.isbn).trim().length);
+            const titleOk = !!(b.title && String(b.title).trim().length);
+            const pages = parseInt(b.pages, 10);
+            const available = parseInt(b.available, 10);
+            const pagesOk = Number.isFinite(pages) && pages > 0;
+            const availableOk = Number.isFinite(available) && available >= 0;
+            const isbnLenOk = isbnOk && String(b.isbn).trim().length >= 5;
+            const titleLenOk = titleOk && String(b.title).trim().length >= 3;
+            return !isbnLenOk || !titleLenOk || !pagesOk || !availableOk;
+        }
+
         function searchBooks() {
             $http.get(`${API_ROOT}/getBooks`).then(function (response) {
                 $scope.bookCache = response.data;
@@ -251,12 +251,12 @@ angular.module("Search", ['ui.bootstrap']).controller("BookController",
 
         $scope.addRows = function () {
             $scope.bookCart.push({
-                'isbn': '',
-                'title': '',
-                'cover': '',
-                'publisher': '',
-                'pages': '',
-                'available': ''
+                'isbn': null,
+                'title': null,
+                'cover': null,
+                'publisher': null,
+                'pages': null,
+                'available': null
             });
         };
 
