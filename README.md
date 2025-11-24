@@ -67,7 +67,8 @@ Reset DB (drops volume): `docker-compose down -v`
 - `docker-compose.yml`, `run_local.sh`
 
 ## Architecture (high level)
-```
+
+```text
 [Browser UI]
   ├─ search.html + search.js (catalogue console, pagination, CRUD via REST)
   └─ register.html + register.js (user signup)
