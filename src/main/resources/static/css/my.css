@@ -108,6 +108,15 @@ h1, h2, h3, h4, h5 { margin: 4px 0; color: var(--text); }
   font-size: 12px;
   margin-top: 4px;
 }
+
+.action-pill input[type="radio"] {
+  display: none;
+}
+
+.action-pill input[type="radio"]:checked + .pill-title,
+.action-pill input[type="radio"]:checked ~ .pill-desc {
+  color: var(--accent);
+}
 .two-col { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; }
 .button-row { display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
 .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }

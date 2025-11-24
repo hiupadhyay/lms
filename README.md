@@ -41,8 +41,8 @@ Steps
    ```
 
 2) Open the UI:
-   - Catalogue/console: http://localhost:8080/views/search.html
-   - Registration: http://localhost:8080/views/register.html
+   - Catalogue/console (vanilla JS): http://localhost:8080/views/search.html
+   - Registration (vanilla JS): http://localhost:8080/views/register.html
 
 3) Quick API checks:
 ```bash
@@ -53,3 +53,8 @@ curl http://localhost:8080/api/count
 Notes
 - If you need to reset the DB, stop compose and remove the `db_data` volume: `docker-compose down -v`.
 - Database credentials are defined in `docker-compose.yml` and `src/main/resources/application.properties` (root/root, db `lms`).
+
+### Front-end stack (current)
+- Pure HTML + CSS + vanilla JS (no Angular). Pages live in `src/main/resources/static/views` and scripts in `src/main/resources/static/js`.
+- Catalogue console: `search.html` + `search.js` (browse/add/delete/borrow/cancel/count with client-side pagination).
+- Registration: `register.html` + `register.js` (basic form validation + API call).
