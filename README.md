@@ -80,44 +80,43 @@ Reset DB (drops volume): `docker-compose down -v`
   - `dbscript/init.sql` (Docker init)
 
 ### UML (context diagram)
-You can paste this PlantUML into any renderer to visualize:
+GitHub/Markdown-friendly mermaid:
 
-```plantuml
-@startuml
-skinparam monochrome true
-skinparam shadowing false
+```mermaid
+flowchart LR
+  User((User))
 
-actor User
-rectangle "Browser UI" {
-  component "search.html\nsearch.js" as UI_Search
-  component "register.html\nregister.js" as UI_Reg
-}
+  subgraph UI[Browser UI]
+    Search[search.html / search.js\nCatalogue console]
+    Register[register.html / register.js\nSignup]
+  end
 
-node "Spring Boot App" {
-  component "BookController" as CtrlBook
-  component "UserController" as CtrlUser
-  component "ViewController" as CtrlView
-  component "BookRepository" as RepoBook
-  component "OrderRepository" as RepoOrder
-  component "UserRepository" as RepoUser
-  database "MySQL\n(schema.sql / data.sql)" as DB
-}
+  subgraph App[Spring Boot App]
+    CtrlBook[BookController]
+    CtrlUser[UserController]
+    CtrlView[ViewController]
+    RepoBook[BookRepository]
+    RepoOrder[OrderRepository]
+    RepoUser[UserRepository]
+  end
 
-User --> UI_Search
-User --> UI_Reg
-UI_Search --> CtrlBook
-UI_Reg --> CtrlUser
-UI_Search --> CtrlView
+  subgraph DB[MySQL 8 (Docker)]
+    Schema[schema.sql / data.sql]
+    Init[dbscript/init.sql]
+  end
 
-CtrlBook --> RepoBook
-CtrlBook --> RepoOrder
-CtrlUser --> RepoUser
-
-RepoBook --> DB
-RepoOrder --> DB
-RepoUser --> DB
-
-@enduml
+  User --> Search
+  User --> Register
+  Search --> CtrlBook
+  Search --> CtrlView
+  Register --> CtrlUser
+  CtrlBook --> RepoBook
+  CtrlBook --> RepoOrder
+  CtrlUser --> RepoUser
+  RepoBook --> Schema
+  RepoOrder --> Schema
+  RepoUser --> Schema
+  Init --> Schema
 ```
 
 ## Troubleshooting
