@@ -1,0 +1,17 @@
+version: "3.9"
+services:
+  db:
+    image: mysql:8.0
+    container_name: lms-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: lms
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./dbscript/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    command: mysqld --default-authentication-plugin=mysql_native_password
+volumes:
+  db_data:

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="/js/angular.js"></script>
+    <script src="/js/app.js"></script>
+    <script src="/js/jquery-1.11.2.min.js"></script>
+    <script data-require="ui-bootstrap@*" data-semver="0.12.1"
+            src="/js/ui-bootstrap-tpls-0.12.1.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/css/my.css">
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
+</head>
+<body class="page-shell" ng-app="Register" ng-controller="UserController">
+<header class="topbar">
+    <div class="brand-mark">Lumen Library</div>
+    <div class="top-actions">
+        <a class="ghost-link" href="/views/search.html">Back to catalogue</a>
+    </div>
+</header>
+
+<main class="auth-layout">
+    <section class="hero-card">
+        <p class="eyebrow">Create your space</p>
+        <h1>Join our learning collective</h1>
+        <p class="lead">Register once to borrow books, manage reservations, and keep your reading history in sync.</p>
+        <ul class="bullet-list">
+            <li>Clean, human-friendly UI</li>
+            <li>Bookings and cancellations in a click</li>
+            <li>Secure login with password confirmation</li>
+        </ul>
+    </section>
+
+    <section class="card form-card">
+        <div class="card-head">
+            <div>
+                <p class="eyebrow">New member</p>
+                <h2>Set up your account</h2>
+            </div>
+            <div class="chip chip-neutral">Takes less than a minute</div>
+        </div>
+        <form class="stacked-form" novalidate>
+            <label>Email
+                <input type="email" placeholder="you@example.com" ng-model="userData.email" required>
+            </label>
+            <label>Full name
+                <input type="text" placeholder="Name as it appears on your ID" ng-model="userData.name" required>
+            </label>
+            <label>Date of birth
+                <input type="date" ng-model="userData.dob" required>
+            </label>
+            <div class="two-col">
+                <label>Password
+                    <input type="password" placeholder="••••••••" ng-model="userData.password" required>
+                </label>
+                <label>Confirm password
+                    <input type="password" placeholder="••••••••" ng-model="userData.repeatPassword" required>
+                </label>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn-primary" ng-click="addUser()">Create account</button>
+                <p class="helper-text">Already a member? Head to <a href="/views/search.html" class="ghost-link">Search</a>.</p>
+            </div>
+        </form>
+        <div class="alert success" ng-show="userCreatedSuccess">
+            <strong>Success:</strong> account created. You can close this tab or go straight to the catalogue.
+        </div>
+        <div class="alert danger" ng-show="displayError">
+            <strong>Check again:</strong> {{errorMessage}}
+        </div>
+    </section>
+</main>
+</body>
+</html>

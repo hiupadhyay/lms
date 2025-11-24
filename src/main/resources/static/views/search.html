@@ -1,0 +1,266 @@
+<html>
+<title>Library Console</title>
+<head>
+    <script src="/js/angular.js"></script>
+    <script src="/js/app.js"></script>
+    <script src="/js/jquery-1.11.2.min.js"></script>
+    <script data-require="ui-bootstrap@*" data-semver="0.12.1"
+            src="/js/ui-bootstrap-tpls-0.12.1.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/css/my.css">
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
+</head>
+<body class="page-shell" ng-app="Search" ng-controller="BookController" ng-init="search()">
+<header class="topbar">
+    <div class="brand-mark">Lumen Library</div>
+    <div class="top-actions">
+        <a class="ghost-link" href="/views/register.html">Register</a>
+        <span class="chip chip-neutral">AngularJS console</span>
+    </div>
+</header>
+
+<section class="hero">
+    <div>
+        <p class="eyebrow">Operations cockpit</p>
+        <h1>Search, manage, and book titles in one view</h1>
+        <p class="lead">Streamlined controls to search catalogue, add or remove titles, and manage live bookings.</p>
+        <div class="hero-actions">
+            <button class="btn-primary" ng-click="search()">Refresh data</button>
+            <button class="btn-ghost" ng-click="books='addBook';search()">Add new books</button>
+        </div>
+    </div>
+</section>
+
+<section class="card chooser">
+    <div class="card-head">
+        <div>
+            <p class="eyebrow">Actions</p>
+            <h3>Pick what you want to do</h3>
+        </div>
+        <button class="btn-secondary" ng-click="search()">Run</button>
+    </div>
+    <div class="option-grid">
+        <label class="action-pill" ng-class="{'active': books==='getBooks'}">
+            <input type="radio" ng-model="books" value="getBooks">
+            <span class="pill-title">{{getBooks}}</span>
+            <span class="pill-desc">Pull the full catalogue with pagination.</span>
+        </label>
+        <label class="action-pill" ng-class="{'active': books==='addBook'}">
+            <input type="radio" ng-model="books" value="addBook">
+            <span class="pill-title">{{addBook}}</span>
+            <span class="pill-desc">Stage multiple titles and push them together.</span>
+        </label>
+        <label class="action-pill" ng-class="{'active': books==='count'}">
+            <input type="radio" ng-model="books" value="count">
+            <span class="pill-title">{{count}}</span>
+            <span class="pill-desc">See how many records are in the catalogue.</span>
+        </label>
+        <label class="action-pill" ng-class="{'active': books==='delBook'}">
+            <input type="radio" ng-model="books" value="delBook">
+            <span class="pill-title">{{delBook}}</span>
+            <span class="pill-desc">Select any catalogue rows to remove safely.</span>
+        </label>
+        <label class="action-pill" ng-class="{'active': books==='borrowBook'}">
+            <input type="radio" ng-model="books" value="borrowBook">
+            <span class="pill-title">{{borrowBook}}</span>
+            <span class="pill-desc">Book a title for a patron in one click.</span>
+        </label>
+        <label class="action-pill" ng-class="{'active': books==='cancelBorrow'}">
+            <input type="radio" ng-model="books" value="cancelBorrow">
+            <span class="pill-title">{{cancelBorrow}}</span>
+            <span class="pill-desc">Reverse a booking and free inventory.</span>
+        </label>
+    </div>
+</section>
+
+<div class="status-row" ng-show="displayStandardMessage || displayError || displayBookingSucess || displayCancelSucess || statusMessage">
+    <div class="alert success" ng-show="displayStandardMessage || displayBookingSucess || displayCancelSucess">
+        {{statusMessage || 'Action completed successfully.'}}
+    </div>
+    <div class="alert danger" ng-show="displayError">
+        Something went wrong. Please retry.
+    </div>
+    <div class="alert info" ng-show="statusMessage && !displayError && !displayStandardMessage && !displayBookingSucess && !displayCancelSucess">
+        {{statusMessage}}
+    </div>
+</div>
+
+<section class="card spotlight" ng-show="countFlag">
+    <div class="card-head">
+        <div>
+            <p class="eyebrow">Inventory health</p>
+            <h3>Total books tracked</h3>
+        </div>
+        <div class="chip chip-neutral">Live</div>
+    </div>
+    <div class="big-number">{{catalogueCount}}</div>
+    <p class="muted">This number includes every title currently stored in the catalogue.</p>
+</section>
+
+<section class="card" ng-show="searchBook">
+    <div class="card-head">
+        <div>
+            <p class="eyebrow">Catalogue</p>
+            <h3>Available titles</h3>
+        </div>
+        <div class="chip chip-neutral">Sorted by ISBN</div>
+    </div>
+    <table class="data-table">
+        <thead>
+        <tr>
+            <th>Book code</th>
+            <th>Title</th>
+            <th>Cover</th>
+            <th>Publisher</th>
+            <th>Pages</th>
+            <th>Available</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="book in filteredTodos">
+            <td>{{book.isbn}}</td>
+            <td>{{book.title}}</td>
+            <td>{{book.cover}}</td>
+            <td>{{book.publisher}}</td>
+            <td>{{book.pages}}</td>
+            <td>{{book.available}}</td>
+        </tr>
+        </tbody>
+    </table>
+    <div class="paginator" ng-show="searchBook">
+        <pagination ng-model="currentPage" total-items="output.length"
+                    max-size="maxSize" boundary-links="true"></pagination>
+    </div>
+</section>
+
+<section class="card" ng-show="addBookFlag">
+    <div class="card-head">
+        <div>
+            <p class="eyebrow">Add books</p>
+            <h3>Stage new titles</h3>
+        </div>
+        <div class="chip chip-neutral">Bulk friendly</div>
+    </div>
+    <div class="stacked-form repeatable" ng-repeat="user in bookCart track by $index">
+        <div class="two-col">
+            <label>ISBN
+                <input type="text" name="isbn" ng-model="user.isbn" placeholder="978-..." required/>
+            </label>
+            <label>Title
+                <input type="text" name="title" ng-model="user.title" placeholder="Title"/>
+            </label>
+        </div>
+        <div class="two-col">
+            <label>Cover
+                <input type="text" name="cover" ng-model="user.cover" placeholder="Hardcover / Paperback"/>
+            </label>
+            <label>Publisher
+                <input type="text" name="publisher" ng-model="user.publisher" placeholder="Publisher"/>
+            </label>
+        </div>
+        <div class="two-col">
+            <label>Pages
+                <input type="number" name="pages" ng-model="user.pages" min="1" placeholder="268"/>
+            </label>
+            <label>Available copies
+                <input type="number" name="available" ng-model="user.available" min="0" placeholder="4"/>
+            </label>
+        </div>
+    </div>
+    <div class="button-row">
+        <button class="btn-ghost" ng-click="addRows($event)">Add row</button>
+        <button class="btn-ghost" ng-click="removeRows()">Remove row</button>
+        <button class="btn-primary" ng-click="addRow()">Submit to catalogue</button>
+    </div>
+</section>
+
+<section class="card" ng-show="delBookFlag">
+    <div class="card-head">
+        <div>
+            <p class="eyebrow">Clean up</p>
+            <h3>Pick books to delete</h3>
+        </div>
+        <div class="chip chip-warning">Bulk delete</div>
+    </div>
+    <table class="data-table">
+        <thead>
+        <tr>
+            <th>Pick</th>
+            <th>Book code</th>
+            <th>Title</th>
+            <th>Cover</th>
+            <th>Publisher</th>
+            <th>Pages</th>
+            <th>Available</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="bcache in filteredTodosC">
+            <td><input type="checkbox" ng-model='bcache.selected'></td>
+            <td>{{bcache.isbn}}</td>
+            <td>{{bcache.title}}</td>
+            <td>{{bcache.cover}}</td>
+            <td>{{bcache.publisher}}</td>
+            <td>{{bcache.pages}}</td>
+            <td>{{bcache.available}}</td>
+        </tr>
+        </tbody>
+    </table>
+    <div class="paginator" ng-show="delBookFlag">
+        <pagination ng-model="currentPage" total-items="bookCache.length"
+                    max-size="maxSize" boundary-links="true"></pagination>
+    </div>
+    <div class="button-row">
+        <button class="btn-danger" ng-click="deleteRows()">Delete selected</button>
+    </div>
+</section>
+
+<section class="card" ng-show="borrowFlag">
+    <div class="card-head">
+        <div>
+            <p class="eyebrow">Book a title</p>
+            <h3>Pick from the catalogue</h3>
+        </div>
+        <div class="chip chip-neutral">Live inventory</div>
+    </div>
+    <div class="card-grid">
+        <article class="book-card" ng-repeat="bcache in filteredTodosC">
+            <p class="eyebrow">{{bcache.publisher}}</p>
+            <h4>{{bcache.title}}</h4>
+            <p class="muted">ISBN: {{bcache.isbn}}</p>
+            <p class="muted">Available: {{bcache.available}}</p>
+            <button type="button" class="btn-primary full" ng-click="makeBooking(bcache)"
+                    ng-show="borrowBook">Book this title</button>
+        </article>
+    </div>
+    <div class="paginator" ng-show="borrowFlag">
+        <pagination ng-model="currentPage" total-items="bookCache.length"
+                    max-size="maxSize" boundary-links="true"></pagination>
+    </div>
+</section>
+
+<section class="card" ng-show="cancelBooking">
+    <div class="card-head">
+        <div>
+            <p class="eyebrow">Cancel booking</p>
+            <h3>Recently booked titles</h3>
+        </div>
+        <div class="chip chip-warning">Manual confirmation</div>
+    </div>
+    <div class="card-grid">
+        <article class="book-card" ng-repeat="bcache in alreadyBooked">
+            <p class="muted">Booking code</p>
+            <h4>{{bcache.bookingId}}</h4>
+            <p class="muted">Date: {{bcache.bookingDate | date:'mediumDate'}}</p>
+            <p class="muted">Quantity: {{bcache.quantity}}</p>
+            <button type="button" class="btn-ghost full" ng-click="cancelBookingM(bcache)"
+                    ng-show="cancelBooking">Cancel order</button>
+        </article>
+    </div>
+    <div class="paginator" ng-show="cancelBooking">
+        <pagination ng-model="currentPage" total-items="cancelCache.length"
+                    max-size="maxSize" boundary-links="true"></pagination>
+    </div>
+</section>
+
+</body>
+</html>
