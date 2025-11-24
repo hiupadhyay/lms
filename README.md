@@ -100,10 +100,9 @@ flowchart LR
     RepoUser[UserRepository]
   end
 
-  subgraph DB[MySQL 8 (Docker)]
-    Schema[schema.sql / data.sql]
-    Init[dbscript/init.sql]
-  end
+  DB[(MySQL 8)]
+  Schema[schema.sql / data.sql]
+  Init[dbscript/init.sql]
 
   User --> Search
   User --> Register
@@ -113,10 +112,11 @@ flowchart LR
   CtrlBook --> RepoBook
   CtrlBook --> RepoOrder
   CtrlUser --> RepoUser
-  RepoBook --> Schema
-  RepoOrder --> Schema
-  RepoUser --> Schema
-  Init --> Schema
+  RepoBook --> DB
+  RepoOrder --> DB
+  RepoUser --> DB
+  Schema --> DB
+  Init --> DB
 ```
 
 ## Troubleshooting
