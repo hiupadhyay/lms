@@ -68,21 +68,56 @@ Reset DB (drops volume): `docker-compose down -v`
 
 ## Architecture (high level)
 
-```text
-[Browser UI]
-  ├─ search.html + search.js (catalogue console, pagination, CRUD via REST)
-  └─ register.html + register.js (user signup)
-      |
-      v
-[Spring Boot App]
-  ├─ Controllers: BookController, UserController, ViewController
-  ├─ Repositories: BookRepository, OrderRepository, UserRepository
-  └─ Models/DTOs: Book, Order, User, CancelBookingRequest, UserDto
-      |
-      v
-[MySQL 8 (Docker)]
-  ├─ schema.sql / data.sql (classpath init)
-  └─ dbscript/init.sql (Docker init)
+- Browser UI  
+  - `search.html` + `search.js` (catalogue console, pagination, CRUD via REST)  
+  - `register.html` + `register.js` (user signup)
+- Spring Boot App  
+  - Controllers: `BookController`, `UserController`, `ViewController`  
+  - Repositories: `BookRepository`, `OrderRepository`, `UserRepository`  
+  - Models/DTOs: `Book`, `Order`, `User`, `CancelBookingRequest`, `UserDto`
+- MySQL 8 (Docker)  
+  - `schema.sql` / `data.sql` (classpath init)  
+  - `dbscript/init.sql` (Docker init)
+
+### UML (context diagram)
+You can paste this PlantUML into any renderer to visualize:
+
+```plantuml
+@startuml
+skinparam monochrome true
+skinparam shadowing false
+
+actor User
+rectangle "Browser UI" {
+  component "search.html\nsearch.js" as UI_Search
+  component "register.html\nregister.js" as UI_Reg
+}
+
+node "Spring Boot App" {
+  component "BookController" as CtrlBook
+  component "UserController" as CtrlUser
+  component "ViewController" as CtrlView
+  component "BookRepository" as RepoBook
+  component "OrderRepository" as RepoOrder
+  component "UserRepository" as RepoUser
+  database "MySQL\n(schema.sql / data.sql)" as DB
+}
+
+User --> UI_Search
+User --> UI_Reg
+UI_Search --> CtrlBook
+UI_Reg --> CtrlUser
+UI_Search --> CtrlView
+
+CtrlBook --> RepoBook
+CtrlBook --> RepoOrder
+CtrlUser --> RepoUser
+
+RepoBook --> DB
+RepoOrder --> DB
+RepoUser --> DB
+
+@enduml
 ```
 
 ## Troubleshooting
