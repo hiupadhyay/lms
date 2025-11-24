@@ -1,60 +1,90 @@
-# lms
-Basic Library managment System Build on Spring Boot
+# Library Management System (LMS)
 
-for more details about project refer 
+Lightweight Spring Boot + MySQL application with a pure HTML/CSS/vanilla JS UI for managing library inventory and bookings.
 
-https://letslearnjavanow.wordpress.com/2018/04/16/library-management-system-using-angular-spring-boot-spring-curd-rest-controller-mysql/
+## Features
+- Browse/search books (client-side pagination)
+- Add new books in bulk
+- Delete books in bulk
+- Borrow a book
+- Cancel/return a booking
+- Inventory count
+- User registration
 
-Features Developed:
+## Tech Stack
+- Backend: Spring Boot 2.2.x, Spring Data JPA
+- Database: MySQL 8 (Docker via `docker-compose.yml`)
+- Frontend: Static HTML/CSS + vanilla JS (no Angular/Vue)
+- Packaging: WAR; runs via `spring-boot:run`
 
-Fetching all Books
-Making a borrow request
-Make a cancellation request
-Make a add book request
+## Quick Start
+Prereqs: Docker + Docker Compose, Java 8+, Maven (or `./mvnw`)
 
-Features Under Development:
-
-Authenication User, Books
-Email support
-Barcode genration for each Book
-
-
-## Run locally (single command)
-
-Prereqs
-- Docker + Docker Compose
-- Java 8+
-- Maven (or use the bundled `mvnw` wrapper)
-
-Steps
-1) From the project root run:
-   ```bash
-   ./run_local.sh
-   ```
-   What it does:
-   - Spins up MySQL 8 in Docker via `docker-compose` with database `lms`, root password `root`, seed schema from `dbscript/init.sql`.
-   - Starts the Spring Boot app on port 8080 using `./mvnw spring-boot:run`.
-   If you prefer manual Docker commands instead of the script:
-   ```bash
-   docker-compose up -d db
-   ./mvnw spring-boot:run
-   ```
-
-2) Open the UI:
-   - Catalogue/console (vanilla JS): http://localhost:8080/views/search.html
-   - Registration (vanilla JS): http://localhost:8080/views/register.html
-
-3) Quick API checks:
 ```bash
-curl http://localhost:8080/api/getBooks
-curl http://localhost:8080/api/count
+./run_local.sh
+```
+- Starts MySQL 8 in Docker (`lms`, root/root) seeded from `dbscript/init.sql` and `schema.sql`/`data.sql`.
+- Starts the Spring Boot app on port 8080.
+
+Open:
+- Catalogue console: http://localhost:8080/views/search.html
+- Registration: http://localhost:8080/views/register.html
+
+Reset DB (drops volume): `docker-compose down -v`
+
+## UI Flows
+1) Browse: default mode shows paged books (ISBN/title/cover/publisher/pages/available).
+2) Inventory count: select “Inventory snapshot” to see total books.
+3) Add books: “Add new titles”, fill required fields (ISBN≥5, title≥3, pages>0, available≥0), add/remove rows, submit; list refreshes.
+4) Delete: “Delete existing”, check rows, “Delete selected”; list refreshes.
+5) Borrow: “Book now”, click “Book this title”; bookings refresh.
+6) Cancel booking: “Cancel booking”, click “Cancel order”; bookings refresh.
+7) Register: fill all fields (passwords must match), submit; inline success/error shown.
+
+## APIs
+- GET `/api/getBooks`
+- POST `/api/addBook` (bulk; validates ISBN≥5, title≥3, pages>0, available≥0)
+- POST `/api/delBook`
+- POST `/api/makeBooking`
+- POST `/api/cancelBooking`
+- GET `/api/getBookingDetails`
+- GET `/api/count`
+- POST `/user/register`
+
+## Validation
+- Books: ISBN≥5 chars, title≥3 chars, pages>0, available≥0; rejected with 400 + message.
+- Registration: all fields required; passwords must match; server returns 400 on invalid payload.
+
+## Project Layout
+- `src/main/java/com/lms/demo/controller`: BookController, UserController, ViewController
+- `src/main/java/com/lms/demo/data/model`: Book, Order, User
+- `src/main/java/com/lms/demo/data/repository`: BookRepository, OrderRepository, UserRepository
+- `src/main/java/com/lms/demo/dto`: CancelBookingRequest, UserDto
+- `src/main/resources/static/views`: `search.html`, `register.html`
+- `src/main/resources/static/js`: `search.js`, `register.js`
+- `src/main/resources`: `application.properties`, `schema.sql`, `data.sql`
+- `dbscript/init.sql`: Docker DB seed
+- `docker-compose.yml`, `run_local.sh`
+
+## Architecture (high level)
+```
+[Browser UI]
+  ├─ search.html + search.js (catalogue console, pagination, CRUD via REST)
+  └─ register.html + register.js (user signup)
+      |
+      v
+[Spring Boot App]
+  ├─ Controllers: BookController, UserController, ViewController
+  ├─ Repositories: BookRepository, OrderRepository, UserRepository
+  └─ Models/DTOs: Book, Order, User, CancelBookingRequest, UserDto
+      |
+      v
+[MySQL 8 (Docker)]
+  ├─ schema.sql / data.sql (classpath init)
+  └─ dbscript/init.sql (Docker init)
 ```
 
-Notes
-- If you need to reset the DB, stop compose and remove the `db_data` volume: `docker-compose down -v`.
-- Database credentials are defined in `docker-compose.yml` and `src/main/resources/application.properties` (root/root, db `lms`).
-
-### Front-end stack (current)
-- Pure HTML + CSS + vanilla JS (no Angular). Pages live in `src/main/resources/static/views` and scripts in `src/main/resources/static/js`.
-- Catalogue console: `search.html` + `search.js` (browse/add/delete/borrow/cancel/count with client-side pagination).
-- Registration: `register.html` + `register.js` (basic form validation + API call).
+## Troubleshooting
+- Port 3306 busy: change port mapping in `docker-compose.yml` and JDBC URL in `application.properties`.
+- Permissions on Docker socket: run compose with sudo or adjust Docker permissions.
+- Empty data after reset: run `docker-compose down -v` then `./run_local.sh` to re-seed.
