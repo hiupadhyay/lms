@@ -7,6 +7,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
 
 @Entity
 @Table(name = "book")
@@ -14,10 +16,12 @@ import javax.persistence.Table;
 public class Book {
   @Id
   @Column(name = "isbn")
+  @NotBlank
   @JsonProperty("isbn")
   private String isbn;
 
   @Column(name = "title")
+  @NotBlank
   @JsonProperty("title")
   private String title;
 
@@ -30,10 +34,12 @@ public class Book {
   private String publisher;
 
   @Column(name = "pages")
+  @Min(1)
   @JsonProperty("pages")
   private int pages;
 
   @Column(name = "available")
+  @Min(0)
   @JsonProperty("available")
   private int available;
 

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import javax.validation.Valid;
+import java.util.Collections;
 
 @RestController
 @RequestMapping("/api")
@@ -45,13 +46,15 @@ public class BookController {
     }
 
     @PostMapping(value = "/addBook", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> addBooks(@Valid @RequestBody List<Book> books) {
+    public ResponseEntity<?> addBooks(@Valid @RequestBody List<Book> books) {
         if (books == null || books.isEmpty()) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest()
+                    .body(Collections.singletonMap("message", "Provide at least one book."));
         }
-        boolean invalid = books.stream().anyMatch(this::invalidBookPayload);
-        if (invalid) {
-            return ResponseEntity.badRequest().build();
+        boolean hasInvalid = books.stream().anyMatch(this::invalidBookPayload);
+        if (hasInvalid) {
+            return ResponseEntity.badRequest()
+                    .body(Collections.singletonMap("message", "Invalid book payload: ISBN/title required, pages > 0, available >= 0."));
         }
         bookRepository.saveAll(books);
         return ResponseEntity.accepted().build();

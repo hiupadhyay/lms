@@ -98,6 +98,11 @@ h1, h2, h3, h4, h5 { margin: 4px 0; color: var(--text); }
   padding: 10px 12px;
   color: var(--text);
 }
+.stacked-form input.ng-invalid.ng-touched,
+.stacked-form input.ng-invalid.ng-dirty {
+  border-color: var(--danger);
+  box-shadow: 0 0 0 1px rgba(220, 53, 69, 0.1);
+}
 .two-col { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; }
 .button-row { display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
 .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }

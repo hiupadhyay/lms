@@ -72,6 +72,7 @@ angular.module("Search", ['ui.bootstrap']).controller("BookController",
         };
         $scope.cancelCart = null;
         $scope.statusMessage = "";
+        $scope.addBookValidationMessage = "";
 
         $scope.search = function () {
             var choice = $scope.books;
@@ -120,11 +121,21 @@ angular.module("Search", ['ui.bootstrap']).controller("BookController",
 
         $scope.addRow = function () {
             const invalidRow = $scope.bookCart.some(function (b) {
-                return !b.isbn || !b.title || !b.pages || b.pages <= 0;
+                const pages = parseInt(b.pages, 10);
+                const available = parseInt(b.available, 10);
+                return !b
+                    || !b.isbn
+                    || !b.title
+                    || !Number.isFinite(pages)
+                    || pages <= 0
+                    || !Number.isFinite(available)
+                    || available < 0;
             });
             if (invalidRow) {
                 $scope.displayError = true;
-                $scope.statusMessage = "Please fill ISBN, Title, and positive Pages for all rows.";
+                $scope.displayStandardMessage = false;
+                $scope.statusMessage = "Fill ISBN, Title, Pages (>0) and Available (>=0) for every row before submitting.";
+                $scope.addBookValidationMessage = $scope.statusMessage;
                 return;
             }
             $http.post(`${API_ROOT}/addBook`, $scope.bookCart).then(function (response) {
@@ -134,12 +145,30 @@ angular.module("Search", ['ui.bootstrap']).controller("BookController",
                     $scope.displayStandardMessage = true;
                     $scope.statusMessage = "Books added successfully.";
                     clear();
+                    $scope.addBookValidationMessage = "";
                 } else {
                     $scope.displayError = true;
+                    $scope.addBookValidationMessage = "Unable to save books. Please retry.";
                 }
-            }).catch(function () {
+            }).catch(function (resp) {
                 $scope.displayError = true;
-                $scope.statusMessage = "Could not save your books.";
+                const msg = (resp && resp.data && resp.data.message) ? resp.data.message : "Could not save your books.";
+                $scope.statusMessage = msg;
+                $scope.addBookValidationMessage = msg;
+            });
+        };
+
+        $scope.bookCartValid = function () {
+            return $scope.bookCart.every(function (b) {
+                const pages = parseInt(b.pages, 10);
+                const available = parseInt(b.available, 10);
+                return b
+                    && b.isbn
+                    && b.title
+                    && Number.isFinite(pages)
+                    && pages > 0
+                    && Number.isFinite(available)
+                    && available >= 0;
             });
         };
 

@@ -140,37 +140,42 @@
         </div>
         <div class="chip chip-neutral">Bulk friendly</div>
     </div>
-    <div class="stacked-form repeatable" ng-repeat="user in bookCart track by $index">
-        <div class="two-col">
-            <label>ISBN
-                <input type="text" name="isbn" ng-model="user.isbn" placeholder="978-..." required/>
-            </label>
-            <label>Title
-                <input type="text" name="title" ng-model="user.title" placeholder="Title"/>
-            </label>
+    <form name="addBookForm" novalidate>
+        <div class="stacked-form repeatable" ng-repeat="user in bookCart track by $index">
+            <div class="two-col">
+                <label>ISBN
+                    <input type="text" name="isbn{{$index}}" ng-model="user.isbn" placeholder="978-..." required/>
+                </label>
+                <label>Title
+                    <input type="text" name="title{{$index}}" ng-model="user.title" placeholder="Title" required/>
+                </label>
+            </div>
+            <div class="two-col">
+                <label>Cover
+                    <input type="text" name="cover{{$index}}" ng-model="user.cover" placeholder="Hardcover / Paperback"/>
+                </label>
+                <label>Publisher
+                    <input type="text" name="publisher{{$index}}" ng-model="user.publisher" placeholder="Publisher"/>
+                </label>
+            </div>
+            <div class="two-col">
+                <label>Pages
+                    <input type="number" name="pages{{$index}}" ng-model="user.pages" min="1" placeholder="268" required/>
+                </label>
+                <label>Available copies
+                    <input type="number" name="available{{$index}}" ng-model="user.available" min="0" placeholder="4" required/>
+                </label>
+            </div>
         </div>
-        <div class="two-col">
-            <label>Cover
-                <input type="text" name="cover" ng-model="user.cover" placeholder="Hardcover / Paperback"/>
-            </label>
-            <label>Publisher
-                <input type="text" name="publisher" ng-model="user.publisher" placeholder="Publisher"/>
-            </label>
+        <div class="button-row">
+            <button class="btn-ghost" ng-click="addRows($event)" type="button">Add row</button>
+            <button class="btn-ghost" ng-click="removeRows()" type="button">Remove row</button>
+            <button class="btn-primary" ng-click="addRow()" ng-disabled="addBookForm.$invalid" type="button">Submit to catalogue</button>
         </div>
-        <div class="two-col">
-            <label>Pages
-                <input type="number" name="pages" ng-model="user.pages" min="1" placeholder="268"/>
-            </label>
-            <label>Available copies
-                <input type="number" name="available" ng-model="user.available" min="0" placeholder="4"/>
-            </label>
+        <div class="alert danger" ng-show="addBookValidationMessage">
+            {{addBookValidationMessage}}
         </div>
-    </div>
-    <div class="button-row">
-        <button class="btn-ghost" ng-click="addRows($event)">Add row</button>
-        <button class="btn-ghost" ng-click="removeRows()">Remove row</button>
-        <button class="btn-primary" ng-click="addRow()">Submit to catalogue</button>
-    </div>
+    </form>
 </section>
 
 <section class="card" ng-show="delBookFlag">
